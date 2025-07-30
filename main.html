@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farewell Celebration</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* 🔹 Podstawowy reset i wygląd intro */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      background-color: black;
+      color: white;
+      text-align: center;
+      overflow-x: hidden;
+    }
+    
+    /* 🎥 WIDEO W TLE */
+    #bgVideo {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      object-fit: cover;
+      filter: brightness(2.5);
+    }
+
+    /* 🌟 INTRO CONTAINER */
+    .intro-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.65);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+      transition: opacity 1s ease;
+      z-index: 10;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* 🌟 TEKSTY W INTRO */
+    .intro-container h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.7);
+    }
+
+    .intro-container .slogan {
+      font-size: 1.4em;
+      margin-bottom: 20px;
+      font-style: italic;
+      color: #f5f5f5;
+      text-shadow: 0 0 5px rgba(255,255,255,0.5);
+    }
+
+    .intro-container p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    /* 🌟 PRZYCISK ENTER – PULSUJĄCY */
+    #enterButton {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background-color: #d4af37;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(212,175,55,0.5);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      animation: pulse 2s infinite;
+    }
+
+    #enterButton:hover {
+      background-color: #f5d76e;
+      transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+      50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(212,175,55,0.7); }
+      100% { transform: scale(1); box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+    }
+
+    /* 🌟 UKRYWAMY MAIN CONTENT NA START */
+    .main-content {
+      display: none;
+      position: relative;
+      z-index: 2;
+      padding-bottom: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor"></div>
+
+  <!-- 🎥 Tło video -->
+  <video autoplay muted loop id="bgVideo">
+    <source src="party.mp4" type="video/mp4">
+  </video>
+
+  <!-- 🎵 MUZYKA – gra od kliknięcia ENTER -->
+  <audio id="bgMusic" loop>
+    <source src="your-music.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 🌟 INTRO -->
+   
+  <div class="intro-container" id="intro">
+    <h1>Farewell Celebration</h1>
+    <div class="slogan" id="slogan"></div>
+    <p>Click below to leave your farewell wishes</p>
+    <button id="enterButton">Join</button>
+  </div>
+
+  <!-- 🌟 CAŁY MAIN CONTENT -->
+  <div class="main-content" id="mainContent">
+    <!-- 🎨 Canvas: glitter i serca -->
+    <canvas id="glitterCanvas"></canvas>
+    <canvas id="heartsCanvas"></canvas>
+
+    <!-- 🎵 Dodatkowa piosenka -->
+    <audio id="farewellSong">
+      <source src="kolega-song.mp4" type="audio/mp4">
+    </audio>
+
+    <!-- 📝 Nagłówek pożegnalny -->
+    <header class="farewell-header parallax" data-speed="0.3">
+      <p>Thank you for the wonderful journey we’ve shared – for your warmth, kindness, and the joy you brought to every day.
+         We were lucky to know you and to work alongside someone so inspiring.
+         People like you are remembered for a lifetime. We wish you endless happiness and success in the new chapter ahead.</p>
+    </header>
+
+    <!-- 💬 Rotujące cytaty -->
+    <div id="quoteBox" class="parallax" data-speed="0.1">
+      "Great leaders inspire greatness in others."
+    </div>
+
+    <!-- 🌟 Główny nagłówek -->
+    <h1 class="parallax" data-speed="0.3">Leave Your Farewell Wishes</h1>
+
+    <!-- 📋 Lista życzeń -->
+    <div class="wishes-container" id="wishList"></div>
+    <div id="wishCounter">0 wishes so far</div>
+
+    <!-- 📝 Formularz dodawania życzeń -->
+    <div class="parallax" data-speed="0.1">
+      <div class="form-container">
+        <h2>Add your message</h2>
+        <input type="text" id="name" placeholder="Your Name">
+        <textarea id="wish" placeholder="Your Farewell Message..."></textarea>
+        <button id="submitWish">Submit</button><br>
+        <button onclick="window.location.href='song.html'">🎥 Watch Farewell Song</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 📦 Skrypty -->
+  <script src="parallax.js"></script>
+  <script src="effects.js"></script>
+
+  <!-- 🌟 Intro fade-out i start muzyki -->
+  <script>
+    const enterButton = document.getElementById('enterButton');
+    const intro = document.getElementById('intro');
+    const mainContent = document.getElementById('mainContent');
+    const bgMusic = document.getElementById('bgMusic');
+
+    enterButton.addEventListener('click', () => {
+      bgMusic.volume = 0.6;
+      bgMusic.play().catch(() => console.log('Autoplay wymaga kliknięcia'));
+
+      intro.style.opacity = '0';
+
+      setTimeout(() => {
+        intro.style.display = 'none';
+        mainContent.style.display = 'block';
+      }, 1000);
+    });
+  </script>
+
+  <script src="chatbotkam.js"></script>
+
+  <!-- ✅ FIREBASE & ŻYCZENIA -->
+<script type="module">
+  import { saveWish, loadWishes } from "./firebase.js";
+
+  // 🎯 Obsługa kliknięcia przycisku "Submit"
+  document.getElementById("submitWish").addEventListener("click", async () => {
+    const name = document.getElementById("name").value.trim();
+    const wish = document.getElementById("wish").value.trim();
+
+    if (!name || !wish) {
+      alert("⚠️ Please enter both your name and a farewell message!");
+      return;
+    }
+
+    try {
+      // ✅ Zapisz życzenie do Firestore
+      await saveWish(name, wish);
+      console.log(`✅ Wysłano życzenie: ${name} – ${wish}`);
+
+      // 🎉 Confetti po wysłaniu
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.7 }
+      });
+
+      // 🔄 Wyczyść pola
+      document.getElementById("name").value = "";
+      document.getElementById("wish").value = "";
+
+    } catch (error) {
+      console.error("❌ Błąd przy zapisie życzenia:", error);
+      alert("❌ There was a problem saving your wish. Please try again.");
+    }
+  });
+
+  // 📥 Pobieranie życzeń na żywo
+  loadWishes((wishes) => {
+    const wishList = document.getElementById("wishList");
+    wishList.innerHTML = "";
+
+    wishes
+      .sort((a, b) => b.timestamp?.toMillis() - a.timestamp?.toMillis()) // sortowanie: najnowsze na górze
+      .forEach(w => {
+        const div = document.createElement("div");
+        div.className = "wish";
+        div.innerHTML = `<strong>${w.name}</strong>: ${w.wish}`;
+        wishList.appendChild(div);
+      });
+
+    // 🔢 licznik życzeń
+    document.getElementById("wishCounter").innerText = `${wishes.length} wishes so far`;
+  });
+</script>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const skipIntro = urlParams.get('skipIntro');
+
+  if (skipIntro) {
+    // Ukryj intro
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+  }
+</script>

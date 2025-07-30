@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Private Access – Szampański Klimat</title>
+
+  <!-- 🎨 FONT MONTSERRAT -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* 🌑 BODY & RESET */
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      color: #333;
+      overflow: hidden;
+      cursor: none;
+      background: url('pearl-paper.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    /* ✨ CANVAS GLITTER */
+    #glitterCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* 🥂 LOGIN BOX */
+    .login-box {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, 200px); /* początkowa pozycja – poniżej ekranu */
+      opacity: 0;
+      background: url('bubbles.png') no-repeat center center / cover;
+      border: 2px solid rgba(212, 175, 55, 0.7);
+      padding: 35px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(212,175,55,0.5);
+      max-width: 380px;
+      width: 90%;
+      backdrop-filter: blur(5px);
+      animation: slideUp 1.2s ease-out forwards;
+    }
+
+    /* 🎬 ANIMACJA WJAZDU BOXA Z DOŁU + bounce */
+    @keyframes slideUp {
+      0% {
+        transform: translate(-50%, 200px);
+        opacity: 0;
+      }
+      70% {
+        transform: translate(-50%, -10px);
+        opacity: 1;
+      }
+      85% {
+        transform: translate(-50%, 5px); /* małe odbicie */
+      }
+      100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
+
+    /* 🚨 ANIMACJA SHAKE (przy złym haśle) */
+    .shake {
+      animation: shake 0.5s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translate(-50%, 0); }
+      20% { transform: translate(-50%, -5px); }
+      40% { transform: translate(-50%, 5px); }
+      60% { transform: translate(-50%, -5px); }
+      80% { transform: translate(-50%, 5px); }
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      color: #d4af37;
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: #222;
+      font-weight: 500;
+    }
+
+    input {
+      padding: 12px;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      text-align: center;
+      outline: none;
+      font-weight: 600;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 28px;
+      background: #ffd700;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.1em;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(212,175,55,0.6);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    button:hover {
+      background: #ffec80;
+      transform: scale(1.05);
+    }
+
+    .error {
+      color: #ff4d4d;
+      margin-top: 14px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    /* 🥂 KURSOR KIELISZEK */
+    .cursor {
+      width: 40px;
+      height: 40px;
+      background: url('champagne.png') no-repeat center/contain;
+      position: fixed;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: transform 0.1s ease;
+      z-index: 999999;
+    }
+    .cursor.bounce {
+      animation: bounce 0.4s ease;
+    }
+    @keyframes bounce {
+      0%   { transform: translate(-50%, -50%) rotate(0deg); }
+      30%  { transform: translate(-50%, -50%) rotate(-15deg); }
+      60%  { transform: translate(-50%, -50%) rotate(15deg); }
+      100% { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+
+    /* ✨ ISKIERKI */
+    .spark {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999999;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🥂 KURSOR -->
+  <div class="cursor"></div>
+
+  <!-- ✨ Canvas glitter -->
+  <canvas id="glitterCanvas"></canvas>
+
+  <!-- 🔐 Login box -->
+  <div class="login-box">
+    <h2>🔐 Private Access</h2>
+    <p>Please enter the password to continue.</p>
+    <input type="password" id="password" placeholder="🍸🍹🍷🍾🍺" />
+    <button onclick="checkPassword()">Enter</button>
+    <div class="error" id="error-message"></div>
+  </div>
+
+<script>
+  // 🎇 GLITTER
+  const canvas = document.getElementById('glitterCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let glitter = [];
+  for (let i = 0; i < 50; i++) {
+    glitter.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1,
+      d: Math.random() * 1 + 0.5
+    });
+  }
+
+  function drawGlitter() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    glitter.forEach(g => {
+      ctx.beginPath();
+      ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2, false);
+      ctx.fillStyle = "rgba(212, 175, 55, 0.7)";
+      ctx.fill();
+    });
+    updateGlitter();
+  }
+
+  function updateGlitter() {
+    glitter.forEach(g => {
+      g.y += g.d;
+      if (g.y > canvas.height) {
+        g.y = 0;
+        g.x = Math.random() * canvas.width;
+      }
+    });
+  }
+
+  setInterval(drawGlitter, 50);
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  // 🥂 KURSOR LOGIKA
+  const cursor = document.querySelector('.cursor');
+  cursor.style.left = '50%';
+  cursor.style.top = '50%';
+
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  document.querySelectorAll('button, input').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('bounce'));
+    el.addEventListener('mouseleave', () => {
+      setTimeout(() => cursor.classList.remove('bounce'), 400);
+    });
+  });
+
+  // ✨ ISKIERKI PRZY KLIKNIĘCIU
+  document.addEventListener('click', (e) => {
+    const colors = ['#ffffff', '#ffd700', '#00c3ff', '#ff69b4'];
+    for (let i = 0; i < 15; i++) { 
+      const spark = document.createElement('div');
+      spark.classList.add('spark');
+      document.body.appendChild(spark);
+
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      spark.style.background = `radial-gradient(circle, ${color} 0%, rgba(255, 255, 255, 0) 70%)`;
+      spark.style.boxShadow = `0 0 8px ${color}`;
+
+      spark.style.left = `${e.clientX}px`;
+      spark.style.top = `${e.clientY}px`;
+
+      const angle = Math.random() * 360;
+      const distance = Math.random() * 70 + 30;
+
+      spark.animate([
+        { transform: `translate(-50%, -50%) translate(0px, 0px) scale(1)`, opacity: 1 },
+        { transform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: 900,
+        easing: 'ease-out',
+        fill: 'forwards'
+      });
+
+      setTimeout(() => spark.remove(), 900);
+    }
+  });
+
+  // 🔐 LOGIKA HASŁA + SHAKE
+  function checkPassword() {
+    const haslo = document.getElementById("password").value;
+    const poprawne = "Kamila2025"; // 🔑 zmieniasz hasło tutaj
+
+    if (haslo === poprawne) {
+      window.location.href = "main.html";
+    } else {
+      document.getElementById("error-message").innerText = "❌ Incorrect password. Please try again.";
+
+      // 🚨 Dodajemy SHAKE na login-box
+      const box = document.querySelector('.login-box');
+      box.classList.add('shake');
+
+      // Usuwamy klasę po animacji, żeby móc powtórzyć
+      setTimeout(() => box.classList.remove('shake'), 500);
+    }
+  }
+</script>
+
+</body>
+</html>

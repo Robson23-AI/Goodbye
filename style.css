@@ -1,0 +1,313 @@
+/* 🎥 WIDEO W TLE */
+#bgVideo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  z-index: -3;
+  object-fit: cover;
+  filter: brightness(2.5);
+}
+
+/* 🎨 CANVAS: glitter i hearts */
+#glitterCanvas,
+#heartsCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* 🌑 BODY & RESET */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: black;
+  color: white;
+  text-align: center;
+  overflow-x: hidden;
+  opacity: 0;
+  transition: opacity 1s ease;
+  cursor: none; /* ukrywamy domyślny kursor */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  cursor: none !important;
+}
+
+/* 🌟 GŁÓWNY NAGŁÓWEK */
+h1 {
+  font-family: 'Montserrat', cursive;
+  font-size: 3em;
+  margin-top: 80px;
+  color: #222;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: inline-block;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  transform: translateY(-30px);
+  animation: fadeInDown 1.5s ease forwards 0.5s;
+  text-align: center;
+}
+
+/* 🌟 SLOGAN (intro screen) */
+.slogan {
+  font-size: 1.4em;
+  margin-bottom: 20px;
+  font-style: italic;
+  color: #f5f5f5;
+  text-shadow: 0 0 5px rgba(255,255,255,0.5);
+  transition: opacity 0.5s ease;
+}
+
+/* 🌟 PŁYNNE PRZEWIJANIE */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 🌟 HEADER Z PODZIĘKOWANIEM */
+.farewell-header {
+  position: relative;
+  background: url('pearl-paper.png') no-repeat center center / cover;
+  color: #333;
+  padding: 25px 30px;
+  margin: 40px auto 20px auto;
+  max-width: 800px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  z-index: 5;
+  overflow: hidden;
+}
+
+.farewell-header::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 0;
+  border-radius: 15px;
+}
+
+.farewell-header p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 700px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 🌟 CYTATY – złoty gradient */
+#quoteBox {
+  font-size: 1.3em;
+  font-style: italic;
+  color: #000;
+  margin: 10px auto;
+  background: url('gold-gradient.png') no-repeat center center / cover;
+  width: 60%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(212,175,55,0.5);
+  text-align: center;
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+/* 🌟 PARALLAX ELEMENTY */
+.parallax {
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+  position: relative;
+  z-index: 2;
+}
+
+/* 🌟 FORMULARZ – półprzezroczysty box + fade-in */
+.form-container {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 25px;
+  box-shadow: 0 0 25px rgba(212,175,55,0.4);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: formFadeIn 1s ease forwards 0.8s;
+}
+
+/* 🌟 POLA FORMULARZA */
+.form-container input,
+.form-container textarea {
+  display: block;
+  width: 80%;
+  max-width: 400px;
+  margin: 10px auto;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.8);
+  background-image: url('gold-gradient.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: 1em;
+  color: #000;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.form-container textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-container input:focus,
+.form-container textarea:focus {
+  outline: none;
+  border: 1px solid #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+  transform: scale(1.03);
+}
+
+/* 🌟 PRZYCISKI FORMULARZA */
+.form-container button {
+  padding: 12px 25px;
+  background-color: #d4af37;
+  border: none;
+  color: black;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1em;
+  box-shadow: 0 0 20px rgba(212,175,55,0.5);
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.form-container button:hover {
+  background-color: #f5d76e;
+  transform: scale(1.07);
+}
+
+.form-container button:active {
+  transform: scale(0.95);
+}
+
+/* 🌟 ŻYCZENIA – złote bąbelki */
+.wish {
+  position: relative;
+  background: url('bubbles.png') no-repeat center center / cover;
+  margin: 12px auto;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 1.1em;
+  color: #000;
+  max-width: 550px;
+  text-align: left;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  animation: slideInWish 0.5s ease forwards;
+}
+
+.wish::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  z-index: 0;
+}
+.wish * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 🌟 ANIMACJE */
+@keyframes slideInWish {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%   { transform: scale(1);   box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+  50%  { transform: scale(1.08); box-shadow: 0 0 20px rgba(212,175,55,0.7); }
+  100% { transform: scale(1);   box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+}
+
+@keyframes formFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🌟 LICZNIK ŻYCZEŃ */
+#wishCounter {
+  color: white;
+  font-size: 1.3em;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
+}
+.wish-counter-pulse {
+  animation: counterPulse 0.4s ease;
+}
+@keyframes counterPulse {
+  0%   { transform: scale(1);   color: #fff; }
+  50%  { transform: scale(1.2); color: #d4af37; }
+  100% { transform: scale(1);   color: #fff; }
+}
+
+/* 🍾 CUSTOM CURSOR */
+.cursor {
+  width: 40px;
+  height: 40px;
+  background: url('champagne.png') no-repeat center/contain;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: transform 0.1s ease;
+  z-index: 999999;
+}
+.cursor.bounce {
+  animation: bounce 0.4s ease;
+}
+
+@keyframes bounce {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  30%  { transform: translate(-50%, -50%) rotate(-15deg); }
+  60%  { transform: translate(-50%, -50%) rotate(15deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* ✨ ISKIERKI */
+.spark {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999999;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
