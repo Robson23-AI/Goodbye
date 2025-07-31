@@ -235,7 +235,7 @@ window.onload = () => {
 
   <script src="chatbotkam.js"></script>
 
- <!-- ✅ FIREBASE & ŻYCZENIA -->
+<!-- ✅ FIREBASE & ŻYCZENIA -->
 <script type="module">
   import { saveWish, loadWishes } from "./firebase.js";
 
@@ -248,7 +248,7 @@ window.onload = () => {
       return;
     }
 
-    // 🔍 Zbieramy dane o przeglądarce, urządzeniu, języku
+    // 🔍 Info o przeglądarce, systemie i języku
     const userAgent = navigator.userAgent;
     const language = navigator.language || navigator.userLanguage;
     const deviceType = /Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop";
@@ -266,43 +266,33 @@ window.onload = () => {
     else if (userAgent.indexOf("Firefox") !== -1) browser = "Firefox";
     else if (userAgent.indexOf("Edge") !== -1) browser = "Edge";
 
-    // 🌍 Pobieramy lokalizację z ipapi.co
+    // 🌍 Lokalizacja z ipapi.co
     fetch('https://ipapi.co/json/')
       .then(response => response.json())
       .then(async data => {
-        try {
-          // ✅ Zapisujemy życzenie + dodatkowe dane
-          await saveWish(name, wish, {
-            country: data.country_name,
-            city: data.city,
-            ip: data.ip,
-            browser: browser,
-            os: os,
-            device: deviceType,
-            language: language
-          });
+        await saveWish(name, wish, {
+          country: data.country_name,
+          city: data.city,
+          ip: data.ip,
+          browser: browser,
+          os: os,
+          device: deviceType,
+          language: language
+        });
 
-          console.log(`✅ Wysłano życzenie: ${name} – ${wish} z dodatkowymi danymi`);
+        console.log(`✅ Życzenie zapisane: ${name} – ${wish}`);
 
-          // 🎉 Confetti po wysłaniu
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.7 }
-          });
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.7 }
+        });
 
-          // 🔄 Wyczyść pola
-          document.getElementById("name").value = "";
-          document.getElementById("wish").value = "";
-        } catch (error) {
-          console.error("❌ Błąd przy zapisie życzenia:", error);
-          alert("❌ There was a problem saving your wish. Please try again.");
-        }
+        document.getElementById("name").value = "";
+        document.getElementById("wish").value = "";
       })
       .catch(async err => {
-        console.error("❌ Błąd przy pobieraniu lokalizacji:", err);
-
-        // ✅ Jeśli API padnie, zapisujemy tylko podstawowe dane
+        console.error("❌ Błąd pobierania lokalizacji:", err);
         await saveWish(name, wish, {
           country: "unknown",
           city: "unknown",
@@ -315,13 +305,13 @@ window.onload = () => {
       });
   });
 
-  // 📥 Pobieranie życzeń na żywo
+  // 📥 Live lista życzeń
   loadWishes((wishes) => {
     const wishList = document.getElementById("wishList");
     wishList.innerHTML = "";
 
     wishes
-      .sort((a, b) => b.timestamp?.toMillis() - a.timestamp?.toMillis()) // sortowanie: najnowsze na górze
+      .sort((a, b) => b.timestamp?.toMillis() - a.timestamp?.toMillis())
       .forEach(w => {
         const div = document.createElement("div");
         div.className = "wish";
@@ -329,17 +319,14 @@ window.onload = () => {
         wishList.appendChild(div);
       });
 
-    // 🔢 licznik życzeń
     document.getElementById("wishCounter").innerText = `${wishes.length} wishes so far`;
   });
 </script>
 
 <script>
+  // ✅ Obsługa skipIntro
   const urlParams = new URLSearchParams(window.location.search);
-  const skipIntro = urlParams.get('skipIntro');
-
-  if (skipIntro) {
-    // Ukryj intro
+  if (urlParams.get('skipIntro')) {
     document.getElementById('intro').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
   }
@@ -351,7 +338,6 @@ window.onload = () => {
   fetch('https://ipapi.co/json/')
     .then(response => response.json())
     .then(data => {
-      console.log("🌍 Dane z ipapi.co:", data);
       saveVisit({
         timestamp: new Date(),
         country: data.country_name,
@@ -359,8 +345,7 @@ window.onload = () => {
         ip: data.ip
       });
     })
-    .catch(error => {
-      console.error("❌ Błąd pobierania lokalizacji:", error);
+    .catch(() => {
       saveVisit({
         timestamp: new Date(),
         country: "unknown",
@@ -369,5 +354,9 @@ window.onload = () => {
       });
     });
 </script>
+
+</body>
+</html>
+
 
 
