@@ -294,7 +294,6 @@ window.onload = () => {
           // 🔄 Wyczyść pola
           document.getElementById("name").value = "";
           document.getElementById("wish").value = "";
-
         } catch (error) {
           console.error("❌ Błąd przy zapisie życzenia:", error);
           alert("❌ There was a problem saving your wish. Please try again.");
@@ -315,24 +314,6 @@ window.onload = () => {
         });
       });
   });
-</script>
-
-    .catch(err => {
-      console.error("❌ Błąd przy pobieraniu lokalizacji:", err);
-
-      // ✅ Jeśli API padnie, zapisujemy tylko podstawowe dane
-      saveWish(name, wish, {
-        browser: browser,
-        os: os,
-        device: deviceType,
-        language: language,
-        country: "unknown",
-        city: "unknown",
-        ip: "not saved"
-      });
-    });
-});
-
 
   // 📥 Pobieranie życzeń na żywo
   loadWishes((wishes) => {
@@ -352,6 +333,7 @@ window.onload = () => {
     document.getElementById("wishCounter").innerText = `${wishes.length} wishes so far`;
   });
 </script>
+
 <script>
   const urlParams = new URLSearchParams(window.location.search);
   const skipIntro = urlParams.get('skipIntro');
@@ -387,4 +369,5 @@ window.onload = () => {
       });
     });
 </script>
+
 
