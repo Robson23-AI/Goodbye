@@ -24,13 +24,14 @@ console.log("✅ Firebase initialized");
 // 📝 FUNKCJE DLA MAIN.HTML (życzenia)
 // ------------------------------------------------
 
-// 📤 Zapisanie życzenia do Firestore
-export async function saveWish(name, wish) {
+// 📤 Zapisanie życzenia do Firestore (rozszerzone o dodatkowe dane)
+export async function saveWish(name, wish, extraData = {}) {
   try {
     await addDoc(collection(db, "wishes"), {
       name: name,
       wish: wish,
-      timestamp: new Date()
+      timestamp: new Date(),
+      ...extraData   // 👈 wszystkie dodatkowe pola (np. miasto, przeglądarka) dodadzą się tutaj
     });
     console.log(`✅ Życzenie zapisane: ${name} – ${wish}`);
   } catch (e) {

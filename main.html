@@ -235,11 +235,10 @@ window.onload = () => {
 
   <script src="chatbotkam.js"></script>
 
-  <!-- ✅ FIREBASE & ŻYCZENIA -->
+ <!-- ✅ FIREBASE & ŻYCZENIA -->
 <script type="module">
   import { saveWish, loadWishes } from "./firebase.js";
 
-  // 🎯 Obsługa kliknięcia przycisku "Submit"
   document.getElementById("submitWish").addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
     const wish = document.getElementById("wish").value.trim();
@@ -249,27 +248,91 @@ window.onload = () => {
       return;
     }
 
-    try {
-      // ✅ Zapisz życzenie do Firestore
-      await saveWish(name, wish);
-      console.log(`✅ Wysłano życzenie: ${name} – ${wish}`);
+    // 🔍 Zbieramy dane o przeglądarce, urządzeniu, języku
+    const userAgent = navigator.userAgent;
+    const language = navigator.language || navigator.userLanguage;
+    const deviceType = /Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop";
 
-      // 🎉 Confetti po wysłaniu
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.7 }
+    let os = "Unknown";
+    if (userAgent.indexOf("Win") !== -1) os = "Windows";
+    else if (userAgent.indexOf("Mac") !== -1) os = "MacOS";
+    else if (/Android/i.test(userAgent)) os = "Android";
+    else if (/iPhone|iPad|iPod/i.test(userAgent)) os = "iOS";
+    else if (userAgent.indexOf("Linux") !== -1) os = "Linux";
+
+    let browser = "Unknown";
+    if (userAgent.indexOf("Chrome") !== -1) browser = "Chrome";
+    else if (userAgent.indexOf("Safari") !== -1) browser = "Safari";
+    else if (userAgent.indexOf("Firefox") !== -1) browser = "Firefox";
+    else if (userAgent.indexOf("Edge") !== -1) browser = "Edge";
+
+    // 🌍 Pobieramy lokalizację z ipapi.co
+    fetch('https://ipapi.co/json/')
+      .then(response => response.json())
+      .then(async data => {
+        try {
+          // ✅ Zapisujemy życzenie + dodatkowe dane
+          await saveWish(name, wish, {
+            country: data.country_name,
+            city: data.city,
+            ip: data.ip,
+            browser: browser,
+            os: os,
+            device: deviceType,
+            language: language
+          });
+
+          console.log(`✅ Wysłano życzenie: ${name} – ${wish} z dodatkowymi danymi`);
+
+          // 🎉 Confetti po wysłaniu
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.7 }
+          });
+
+          // 🔄 Wyczyść pola
+          document.getElementById("name").value = "";
+          document.getElementById("wish").value = "";
+
+        } catch (error) {
+          console.error("❌ Błąd przy zapisie życzenia:", error);
+          alert("❌ There was a problem saving your wish. Please try again.");
+        }
+      })
+      .catch(async err => {
+        console.error("❌ Błąd przy pobieraniu lokalizacji:", err);
+
+        // ✅ Jeśli API padnie, zapisujemy tylko podstawowe dane
+        await saveWish(name, wish, {
+          country: "unknown",
+          city: "unknown",
+          ip: "not saved",
+          browser: browser,
+          os: os,
+          device: deviceType,
+          language: language
+        });
       });
-
-      // 🔄 Wyczyść pola
-      document.getElementById("name").value = "";
-      document.getElementById("wish").value = "";
-
-    } catch (error) {
-      console.error("❌ Błąd przy zapisie życzenia:", error);
-      alert("❌ There was a problem saving your wish. Please try again.");
-    }
   });
+</script>
+
+    .catch(err => {
+      console.error("❌ Błąd przy pobieraniu lokalizacji:", err);
+
+      // ✅ Jeśli API padnie, zapisujemy tylko podstawowe dane
+      saveWish(name, wish, {
+        browser: browser,
+        os: os,
+        device: deviceType,
+        language: language,
+        country: "unknown",
+        city: "unknown",
+        ip: "not saved"
+      });
+    });
+});
+
 
   // 📥 Pobieranie życzeń na żywo
   loadWishes((wishes) => {
