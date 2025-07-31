@@ -303,16 +303,15 @@ window.onload = () => {
 <script type="module">
   import { saveVisit } from "./firebase.js";
 
-  fetch('https://ip-api.com/json/')
+  fetch('https://ipapi.co/json/')
     .then(response => response.json())
     .then(data => {
-      console.log("🌍 Lokalizacja odwiedzającego:", data);
-
+      console.log("🌍 Dane z ipapi.co:", data);
       saveVisit({
         timestamp: new Date(),
-        country: data.country,
+        country: data.country_name,
         city: data.city,
-        ip: data.query
+        ip: data.ip
       });
     })
     .catch(error => {
@@ -320,10 +319,9 @@ window.onload = () => {
       saveVisit({
         timestamp: new Date(),
         country: "unknown",
-        city: "unknown"
+        city: "unknown",
+        ip: "not saved"
       });
     });
 </script>
 
-</body>
-</html>
