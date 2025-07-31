@@ -184,25 +184,54 @@
   <script src="parallax.js"></script>
   <script src="effects.js"></script>
 
-  <!-- 🌟 Intro fade-out i start muzyki -->
-  <script>
-    const enterButton = document.getElementById('enterButton');
-    const intro = document.getElementById('intro');
-    const mainContent = document.getElementById('mainContent');
-    const bgMusic = document.getElementById('bgMusic');
+<!-- 🌟 Intro fade-out i start muzyki -->
+<script>
+window.onload = () => {
+  const enterButton = document.getElementById('enterButton');
+  const intro = document.getElementById('intro');
+  const mainContent = document.getElementById('mainContent');
+  const bgMusic = document.getElementById('bgMusic');
 
-    enterButton.addEventListener('click', () => {
-      bgMusic.volume = 0.6;
-      bgMusic.play().catch(() => console.log('Autoplay wymaga kliknięcia'));
+  // 🔘 Normalne intro – kliknięcie Join
+  enterButton.addEventListener('click', () => {
+    bgMusic.volume = 0.6;
+    bgMusic.play().catch(() => console.log('🎵 Autoplay wymaga kliknięcia'));
+    intro.style.opacity = '0';
+    setTimeout(() => {
+      intro.style.display = 'none';
+      mainContent.style.display = 'block';
+    }, 1000);
+  });
 
-      intro.style.opacity = '0';
+  // ✅ Sprawdzenie skipIntro LUB flagi localStorage (po powrocie z song.html)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('skipIntro') || localStorage.getItem("playMusic") === "true") {
+    intro.style.display = 'none';
+    mainContent.style.display = 'block';
 
-      setTimeout(() => {
-        intro.style.display = 'none';
-        mainContent.style.display = 'block';
-      }, 1000);
-    });
-  </script>
+    // 🟢 Czyszczenie flagi po powrocie
+    localStorage.removeItem("playMusic");
+
+    // ▶ Start muzyki muted → fade-in
+    bgMusic.muted = true;
+    bgMusic.play().then(() => {
+      bgMusic.muted = false;
+      bgMusic.volume = 0;
+
+      // 🔊 Płynne zwiększanie głośności
+      let vol = 0;
+      const fade = setInterval(() => {
+        vol += 0.05;
+        bgMusic.volume = vol;
+        if (vol >= 0.6) clearInterval(fade);
+      }, 200);
+    }).catch(err => console.log('🎵 Muzyka zablokowana:', err));
+  }
+};
+</script>
+
+
+
 
   <script src="chatbotkam.js"></script>
 
@@ -270,3 +299,31 @@
     document.getElementById('mainContent').style.display = 'block';
   }
 </script>
+
+<script type="module">
+  import { saveVisit } from "./firebase.js";
+
+  fetch('https://ip-api.com/json/')
+    .then(response => response.json())
+    .then(data => {
+      console.log("🌍 Lokalizacja odwiedzającego:", data);
+
+      saveVisit({
+        timestamp: new Date(),
+        country: data.country,
+        city: data.city,
+        ip: data.query
+      });
+    })
+    .catch(error => {
+      console.error("❌ Błąd pobierania lokalizacji:", error);
+      saveVisit({
+        timestamp: new Date(),
+        country: "unknown",
+        city: "unknown"
+      });
+    });
+</script>
+
+</body>
+</html>

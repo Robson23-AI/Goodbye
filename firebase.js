@@ -9,14 +9,14 @@ const firebaseConfig = {
   apiKey: "AIzaSyBNfuMrNuMLfqB0VQAStyxEo2YCOfYsb08",
   authDomain: "farawell-app.firebaseapp.com",
   projectId: "farawell-app",
-  storageBucket: "farawell-app.appspot.com", // 🔄 poprawiona końcówka
+  storageBucket: "farawell-app.appspot.com",
   messagingSenderId: "615791844906",
   appId: "1:615791844906:web:a9fa0d7305dc97181f2d53"
 };
 
 // ✅ Start Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 console.log("✅ Firebase initialized");
 
@@ -73,5 +73,23 @@ export async function logPlay() {
     console.log("🎵 Play Song zapisany w bazie");
   } catch (e) {
     console.error("❌ Błąd przy logowaniu play: ", e);
+  }
+}
+
+// ------------------------------------------------
+// 📊 NOWA FUNKCJA – zapisywanie lokalizacji wizyty
+// ------------------------------------------------
+
+export async function saveVisit(data) {
+  try {
+    await addDoc(collection(db, "visits"), {
+      timestamp: data.timestamp || new Date(),
+      country: data.country || "unknown",
+      city: data.city || "unknown",
+      ip: data.ip || "not saved"
+    });
+    console.log("✅ Wizyta z lokalizacją zapisana w bazie");
+  } catch (e) {
+    console.error("❌ Błąd przy zapisie wizyty z lokalizacją: ", e);
   }
 }
