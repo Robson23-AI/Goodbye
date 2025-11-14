@@ -109,7 +109,7 @@ const firebaseConfig = {
 2. Change the login password
 
 In index.html:
-const poprawne = "Kamila2025";
+const poprawne = "xxxxxx";
 Change to any string.
 
 3. Replace media files (optional)
